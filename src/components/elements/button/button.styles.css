@@ -1,0 +1,7 @@
+.fm-btn {
+  @apply w-1/4 flex items-center justify-center text-center hover:bg-blue-400 hover:text-white hover:shadow-lg cursor-pointer
+    h-[90px] rounded-lg bg-white text-[15px];
+}
+.fm-btn--active {
+  @apply bg-blue-400 text-white shadow-lg;
+}
