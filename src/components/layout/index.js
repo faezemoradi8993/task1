@@ -8,7 +8,7 @@ function Layout({ children }) {
     <div className="min-h-screen flex flex-col w-full">
       <Header />
       <Main>{children}</Main>
-      <Footer />
+      {/* <Footer /> */}
     </div>
   );
 }

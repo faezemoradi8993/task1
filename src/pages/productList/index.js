@@ -4,18 +4,19 @@ import { Link } from "react-router-dom";
 import Button from "../../components/elements/button";
 
 function ProductList() {
-  const [length, setLength] = useState(10);
+  const [page, setPage] = useState(0);
+
   const [id, setId] = useState(195);
-  const { data, isLoading } = useGetProductLists(id);
+  const { data, isLoading } = useGetProductLists(id,page);
   if (isLoading)
     return (
-      <div className="w-full h-full flex items-center justify-center text-3xl text-white">
-        is loading ..
+      <div className="w-full h-full flex items-center justify-center text-3xl text-blue-500">
+        ..در حال بارگذاری
       </div>
     );
   return (
-    <div>
-      <div className="w-full flex justify-between items-center space-x-5 px-3 border-transparent pb-5 border-b-4 border-b-white ">
+    <div className="text-sm">
+      <div className="w-full flex justify-between items-center space-x-5  border-transparent pb-5 border-b-4 border-b-white ">
         <Button
           title="موس"
           isActive={id === 161 ? true : false}
@@ -37,14 +38,14 @@ function ProductList() {
           onClick={() => setId(195)}
         />
       </div>
-      {data?.data?.data?.items.slice(0, length).map((d) => (
+      {data?.data?.data?.items.map((d) => (
         <Link
           key={d.id}
-          className="group flex items-center justify-between hover:shadow-lg p-5 bg-gray-200 m-3 hover:bg-white"
+          className="group flex items-center justify-between hover:shadow-md p-5 bg-white my-3 text-[12px] "
           to={`product/${d.id}`}
         >
           <p className="self-end">{d.price} تومان</p>
-          <div className="flex">
+          <div className="flex text-right">
             <p className="mr-3">{d.title}</p>
             <img
               className="w-[90px] group-hover:shadow-lg"
@@ -54,6 +55,9 @@ function ProductList() {
           </div>
         </Link>
       ))}
+      <div className="w-full flex items-center justify-center">
+        <Button title="موارد بیشتر" onClick={()=>setPage(page+1)} />
+      </div>
     </div>
   );
 }
