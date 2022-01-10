@@ -8,6 +8,8 @@ import FavoriteProducts from "./pages/favoriteProducts";
 import { QueryClient, QueryClientProvider } from "react-query";
 import Login from "./pages/login";
 import Register from "./pages/Register";
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 const queryClient = new QueryClient();
 function App() {
@@ -28,6 +30,7 @@ function App() {
             <Route path="/login" exact element={<Login />} />
           </Routes>
         </Layout>
+        <ToastContainer />
       </QueryClientProvider>
     </BrowserRouter>
   );

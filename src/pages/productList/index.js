@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { useGetProductLists } from "../../api";
+import { useProductLists } from "../../api";
 import { Link } from "react-router-dom";
 import Button from "../../components/elements/button";
 
@@ -7,7 +7,7 @@ function ProductList() {
   const [page, setPage] = useState(0);
 
   const [id, setId] = useState(195);
-  const { data, isLoading } = useGetProductLists(id,page);
+  const { data, isLoading } = useProductLists(id,page);
   if (isLoading)
     return (
       <div className="w-full h-full flex items-center justify-center text-3xl text-blue-500">

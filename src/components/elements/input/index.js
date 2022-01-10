@@ -1,7 +1,7 @@
 import React from "react";
 import { XIcon, CheckIcon } from "@heroicons/react/solid";
 
-function Input({ type, error, success, label, style }) {
+function Input({ type, error, success, label, style , onChange, onBlure , value }) {
   return (
     <div
       className="flex p-3 w-full md:w-1/2 my-5 relative rounded-md border-[1px]  border-blue-300 text-[14px]"
@@ -18,6 +18,9 @@ function Input({ type, error, success, label, style }) {
                 className="w-full outline-none bg-transparent text-[12px]"
                 type="text"
                 dir="rtl"
+                onChange={onChange}
+                onBlure={onBlure}
+                value={value}
               />
             );
           case "password":
@@ -25,15 +28,30 @@ function Input({ type, error, success, label, style }) {
               <input
                 className="w-full outline-none bg-transparent  text-[12px] "
                 type="password"
+                onChange={onChange}
+                onBlure={onBlure}
+                value={value}
               />
             );
           case "mobile":
             return (
               <input
                 className="w-full outline-none bg-transparent  text-[12px] "
-                pattern={/^(\+98|0098|98|0)?9\d{9}$/g}
                 maxLength={11}
                 type="mobile"
+                onChange={onChange}
+                onBlure={onBlure}
+                value={value}
+              />
+            );
+          case "email":
+            return (
+              <input
+                className="w-full outline-none bg-transparent  text-[12px] "
+                type="email"
+                onChange={onChange}
+                onBlure={onBlure}
+                value={value}
               />
             );
 

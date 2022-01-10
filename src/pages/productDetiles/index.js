@@ -1,11 +1,11 @@
 import { useParams, useNavigate } from "react-router-dom";
-import { useGetProductDetails } from "../../api";
+import { useProductDetails } from "../../api";
 import { ShoppingCartIcon, HeartIcon } from "@heroicons/react/solid";
 import Button from "../../components/elements/button";
 function ProductDetiles() {
   const history = useNavigate();
   const params = useParams();
-  const { data, isLoading } = useGetProductDetails(params.id);
+  const { data, isLoading } = useProductDetails(params.id);
   if (isLoading)
     return (
       <div className="w-full h-full flex items-center justify-center text-3xl text-blue-500">
