@@ -15,42 +15,45 @@ import {
   CartContextProvider,
   UserContextProvider,
 } from "./context";
+import AxiosInterceptor from "./api/AxiosInterceptor";
 
 const queryClient = new QueryClient();
 function App() {
   return (
     <BrowserRouter>
-      <QueryClientProvider client={queryClient}>
-        <TokenContextProvider>
-          <CartContextProvider>
-            <UserContextProvider>
-              <Layout>
-                <Routes>
-                  <Route path="/" exact element={<ProductList />} />
-                  <Route
-                    path="/product/:id"
-                    exact
-                    element={<ProductDetiles />}
-                  />
-                  <Route
-                    path="/shoppingCart"
-                    exact
-                    element={<ShoppingCart />}
-                  />
-                  <Route
-                    path="/favoriteProducts"
-                    exact
-                    element={<FavoriteProducts />}
-                  />
-                  <Route path="/register" exact element={<Register />} />
-                  <Route path="/login" exact element={<Login />} />
-                </Routes>
-              </Layout>
-              <ToastContainer />
-            </UserContextProvider>
-          </CartContextProvider>
-        </TokenContextProvider>
-      </QueryClientProvider>
+      <AxiosInterceptor>
+        <QueryClientProvider client={queryClient}>
+          <TokenContextProvider>
+            <CartContextProvider>
+              <UserContextProvider>
+                <Layout>
+                  <Routes>
+                    <Route path="/" exact element={<ProductList />} />
+                    <Route
+                      path="/product/:id"
+                      exact
+                      element={<ProductDetiles />}
+                    />
+                    <Route
+                      path="/shoppingCart"
+                      exact
+                      element={<ShoppingCart />}
+                    />
+                    <Route
+                      path="/favoriteProducts"
+                      exact
+                      element={<FavoriteProducts />}
+                    />
+                    <Route path="/register" exact element={<Register />} />
+                    <Route path="/login" exact element={<Login />} />
+                  </Routes>
+                </Layout>
+                <ToastContainer />
+              </UserContextProvider>
+            </CartContextProvider>
+          </TokenContextProvider>
+        </QueryClientProvider>
+      </AxiosInterceptor>
     </BrowserRouter>
   );
 }

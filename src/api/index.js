@@ -1,5 +1,5 @@
 import { useQuery, useMutation } from "react-query";
-import { ToastContainer, toast } from "react-toastify";
+import {  toast } from "react-toastify";
 import axios from "axios";
 import { storeData } from "../utilities";
 import { useNavigate } from "react-router-dom";
@@ -83,10 +83,8 @@ export const useUserRegister = () => {
 //cart
 //get cart list
 export const getCartLists = async (page) => {
-  const token = getData("token");
-  const data = await api.get(`cart/list?page=${page}`, {
-    headers: { Authorization: `Bearer ${token}` },
-  });
+
+  const data = await api.get(`cart/list?page=${page}`);
   return data;
 };
 export const useCartLists = (page) => {
@@ -94,10 +92,8 @@ export const useCartLists = (page) => {
 };
 //add product to cart list
 export const AddToCard = async (data) => {
-  const token = getData("token");
   return await api.post(
-    `cart/add?quantity=${data.quantity}&product_id=${data.id}`,
-    { headers: { Authorization: `Bearer ${token}` } }
+    `cart/add?quantity=${data.quantity}&product_id=${data.id}`
   );
 };
 export const useAddToCard = () => {
