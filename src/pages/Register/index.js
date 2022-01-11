@@ -34,9 +34,6 @@ function Register() {
       username: data.nicName,
       password: data.password,
     });
-    console.log(registerData,"registerData");
-    console.log(registerLoginError,"registerLoginError");
-
   };
 
   return (

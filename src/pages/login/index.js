@@ -20,7 +20,6 @@ function Login() {
   });
   const onSubmit = (data) => {
    mutate({ user: data.userName, password: data.password });
-   console.log(data);
   };
   // if user logged , redirect to profile
   const history = useNavigate();

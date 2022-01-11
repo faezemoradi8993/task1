@@ -1,25 +1,27 @@
 import { useEffect } from "react";
 import axios from "axios";
 import { useQueryClient } from "react-query";
-import { useTokenContext } from "../context/Index";
+import { useTokenContext } from "../context";
 // import useDeviceInfo from "../hook/useDeviceInfo";
 // import { refreshToken } from "./api";
-import { getData } from "../utility/helperFunction";
-import { useHistory } from "react-router-dom";
+import { getData } from "../utilities";
+// import { useHistory } from "react-router-dom";
 const AxiosInterceptor = () => {
   const baseURL = "https://api.technosun.ir/v1";
   const api = axios.create({ baseURL: `${baseURL}/`, timeout: 10000 });
   const queryClient = useQueryClient();
 
-  const history = useHistory();
+  // const history = useHistory();
 
   const { setToken } = useTokenContext();
 
   // axios.interceptors
-  useEffect(() => {
+  // useEffect(() => {
     api.interceptors.request.use(
       (config) => {
-        const token = getData("token");
+        const token=queryClient.getQueryCache("token")
+        // const token = getData("token");
+        console.log(token);
         if (token) {
           config.headers["Authorization"] = "bearer " + token;
         }
@@ -76,7 +78,7 @@ const AxiosInterceptor = () => {
         return Promise.reject(error);
       }
     );
-  }, [queryClient, setToken, history]);
+  // }, [setToken]);
   // end
 
   return null;

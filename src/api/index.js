@@ -1,5 +1,5 @@
 import { useQuery, useMutation } from "react-query";
-import {  toast } from "react-toastify";
+import { toast } from "react-toastify";
 import axios from "axios";
 import { storeData } from "../utilities";
 import { useNavigate } from "react-router-dom";
@@ -7,7 +7,9 @@ import { useTokenContext, useUserContext } from "../context";
 import { useQueryClient } from "react-query";
 import { getData } from "./../utilities/index";
 const baseURL = "https://api.technosun.ir/v1";
-const api = axios.create({ baseURL: `${baseURL}/`, timeout: 10000 });
+//to do : solve token remove in logout 
+const token=getData("token")
+const api = axios.create({ baseURL: `${baseURL}/`, timeout: 10000 ,headers: {'Authorization': 'Bearer '+token}});
 //get product list by cid
 export const getProductLists = async (cid, page) => {
   const data = await api.get(
@@ -15,8 +17,8 @@ export const getProductLists = async (cid, page) => {
   );
   return data;
 };
-export const useProductLists = (id) => {
-  return useQuery(["productList", id], (id) => getProductLists(id));
+export const useProductLists = (cid) => {
+  return useQuery(["productList", cid], (cid) => getProductLists(cid));
 };
 //get product details by id
 export const getProductDetails = async (id) => {
@@ -40,10 +42,10 @@ export const useUserLogin = () => {
       toast.error(r?.response?.data?.data?.message);
     },
     onSuccess: (r) => {
-      console.log(r, "success");
       storeData("token", r?.token);
       setUser(r?.user.first_name);
       queryClient.setQueriesData("user", r?.user);
+      queryClient.setQueriesData("token", r?.token);
       toast.success(
         `${r?.user?.first_name}  ${r?.user?.last_name} عزیز با موفقیت وارد شدید`
       );
@@ -63,11 +65,9 @@ export const useUserRegister = () => {
   const { setUser } = useUserContext();
   return useMutation(userRegister, {
     onError: (r) => {
-      console.log(r?.response?.data?.data?.message);
       toast.error(r?.response?.data?.data?.message);
     },
     onSuccess: (r) => {
-      console.log(r, "success");
       setToken(r.data.data.token);
       setUser(r.data.data.user.first_name);
       toast.success(
@@ -82,13 +82,12 @@ export const useUserRegister = () => {
 
 //cart
 //get cart list
-export const getCartLists = async (page) => {
-
-  const data = await api.get(`cart/list?page=${page}`);
+export const getCartLists = async () => {
+  const data = await api.get(`cart/list`);
   return data;
 };
-export const useCartLists = (page) => {
-  return useQuery(["cartList", page], getCartLists(page));
+export const useCartLists = () => {
+  return useQuery("cartList",()=> getCartLists());
 };
 //add product to cart list
 export const AddToCard = async (data) => {
@@ -99,17 +98,13 @@ export const AddToCard = async (data) => {
 export const useAddToCard = () => {
   return useMutation(AddToCard, {
     onError: (r) => {
-      console.log(r, "err");
     },
     onSuccess: (r) => {
-      console.log(r, "success");
       // toast.success("اضافه شد ");
     },
     onMutate: (r) => {
-      console.log(r, "Mutate");
     },
     onSettled: (r) => {
-      console.log(r, "settled");
     },
   });
 };
