@@ -8,7 +8,6 @@ function Register() {
   const {
     data:registerData,
     mutate,
-    isLoading,
     error: registerLoginError,
   } = useUserRegister();
 
@@ -16,8 +15,6 @@ function Register() {
     control,
     handleSubmit,
     formState: { errors: registerFormErrors },
-    getValues,
-    reset,
   } = useForm({
     defaultValues: {
       firstName: "faeze",
@@ -53,13 +50,13 @@ function Register() {
             name="firstName"
             control={control}
             render={({ field }) => (
-              <Input type="text" label="نام خانوادگی" {...field} />
+              <Input type="text" label="نام " {...field} />
             )}
           />
           <Controller
             name="lastName"
             control={control}
-            render={({ field }) => <Input type="text" label="نام" {...field} />}
+            render={({ field }) => <Input type="text" label=" نام خانوادگی " {...field} />}
           />
         </div>
         <div className="flex flex-col md:flex-row space-x-0 md:space-x-5">

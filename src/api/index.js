@@ -1,8 +1,11 @@
 import { useQuery, useMutation } from "react-query";
-import { ToastContainer, toast } from 'react-toastify';
+import { ToastContainer, toast } from "react-toastify";
 import axios from "axios";
 import { storeData } from "../utilities";
 import { useNavigate } from "react-router-dom";
+import { useTokenContext, useUserContext } from "../context";
+import { useQueryClient } from "react-query";
+import { getData } from "./../utilities/index";
 const baseURL = "https://api.technosun.ir/v1";
 const api = axios.create({ baseURL: `${baseURL}/`, timeout: 10000 });
 //get product list by cid
@@ -28,40 +31,83 @@ export const userLogin = async (body) => {
   const { data } = await api.post(`auth/login`, body);
   return data?.data;
 };
-export const useUserLogin = (body) => {
-  const navigate=useNavigate()
-  return useMutation((body) => userLogin(body), {
+export const useUserLogin = () => {
+  const navigate = useNavigate();
+  const queryClient = useQueryClient();
+  const { setUser } = useUserContext();
+  return useMutation(userLogin, {
     onError: (r) => {
-      console.log(r, "err");
+      toast.error(r?.response?.data?.data?.message);
     },
     onSuccess: (r) => {
       console.log(r, "success");
-      storeData("token",r.token)
-      toast.success(`${r.user.first_name}  ${r.user.last_name} با موفقیت ثبت نام شدید`)
-      navigate("")
+      storeData("token", r?.token);
+      setUser(r?.user.first_name);
+      queryClient.setQueriesData("user", r?.user);
+      toast.success(
+        `${r?.user?.first_name}  ${r?.user?.last_name} عزیز با موفقیت وارد شدید`
+      );
+      navigate("/");
     },
-    onMutate: (r) => {
-      console.log(r, "Mutate");
-    },
-    onSettled: (r) => {
-      console.log(r, "settled");
-    },
+    onMutate: (r) => {},
+    onSettled: (r) => {},
   });
 };
 //register
 export const userRegister = async (body) => {
   return await api.post(`auth/register`, body);
 };
-export const useUserRegister = (body) => {
-  return useMutation((body) => userRegister(body), {
+export const useUserRegister = () => {
+  const navigate = useNavigate();
+  const { setToken } = useTokenContext();
+  const { setUser } = useUserContext();
+  return useMutation(userRegister, {
     onError: (r) => {
-      console.log(r, "err");
-      toast.error(r)
+      console.log(r?.response?.data?.data?.message);
+      toast.error(r?.response?.data?.data?.message);
     },
     onSuccess: (r) => {
       console.log(r, "success");
-      storeData("token",r.data.data.token)
-      toast.success(`${r.data.data.user.first_name}  ${r.data.data.user.last_name} با موفقیت ثبت نام شدید`)
+      setToken(r.data.data.token);
+      setUser(r.data.data.user.first_name);
+      toast.success(
+        `${r.data.data.user.first_name}  ${r.data.data.user.last_name}  عزیز  با موفقیت ثبت نام شدید برای ورود لاگین کنید`
+      );
+      navigate("/login");
+    },
+    onMutate: (r) => {},
+    onSettled: (r) => {},
+  });
+};
+
+//cart
+//get cart list
+export const getCartLists = async (page) => {
+  const token = getData("token");
+  const data = await api.get(`cart/list?page=${page}`, {
+    headers: { Authorization: `Bearer ${token}` },
+  });
+  return data;
+};
+export const useCartLists = (page) => {
+  return useQuery(["cartList", page], getCartLists(page));
+};
+//add product to cart list
+export const AddToCard = async (data) => {
+  const token = getData("token");
+  return await api.post(
+    `cart/add?quantity=${data.quantity}&product_id=${data.id}`,
+    { headers: { Authorization: `Bearer ${token}` } }
+  );
+};
+export const useAddToCard = () => {
+  return useMutation(AddToCard, {
+    onError: (r) => {
+      console.log(r, "err");
+    },
+    onSuccess: (r) => {
+      console.log(r, "success");
+      // toast.success("اضافه شد ");
     },
     onMutate: (r) => {
       console.log(r, "Mutate");
@@ -71,40 +117,3 @@ export const useUserRegister = (body) => {
     },
   });
 };
-
-//login
-// export const userLogin = async (body) => {
-//   console.log(body);
-//   return await api.post(`auth/login`, body);
-// };
-// export const useUserLogin = (body) => {
-//   console.log(body);
-//   return useMutation(userLogin(body), {
-//     onSuccess: (res) => {
-//       console.log(res);
-//       storeData("token", res.token);
-//       console.log("done login");
-//     },
-//     onError: (err) => {
-//       console.log(err);
-//     },
-//     onSettled: () => {},
-//   });
-// };
-// //register
-// export const userRegister = async (body) => {
-//   return await api.post(`auth/register`, body);
-// };
-// export const useUserRegister = (body) => {
-//   return useMutation(userRegister(body), {
-//     onSuccess: (res) => {
-//       console.log(res);
-//       // storeData("token", res.token);
-//       console.log("done register");
-//     },
-//     onError: (err) => {
-//       console.log(err);
-//     },
-//     onSettled: () => {},
-//   });
-// };

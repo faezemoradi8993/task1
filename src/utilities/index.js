@@ -4,4 +4,7 @@ export  function getData(key) {
 export  function storeData(key,data) {
   return localStorage.setItem(key, data);
 };
+export  function removeData(key) {
+  return localStorage.removeItem(key);
+};
 

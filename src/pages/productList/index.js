@@ -10,13 +10,13 @@ function ProductList() {
   const { data, isLoading } = useProductLists(id,page);
   if (isLoading)
     return (
-      <div className="w-full h-full flex items-center justify-center text-3xl text-blue-500">
+      <div className="w-full h-full flex items-center justify-center text-xl text-blue-500">
         ..در حال بارگذاری
       </div>
     );
   return (
     <div className="text-sm">
-      <div className="w-full flex justify-between items-center space-x-5  border-transparent pb-5 border-b-4 border-b-white ">
+      <div className="w-full flex justify-between items-center space-x-5  border-transparent pb-3 border-b-4 border-b-white ">
         <Button
           title="موس"
           isActive={id === 161 ? true : false}
@@ -41,14 +41,14 @@ function ProductList() {
       {data?.data?.data?.items.map((d) => (
         <Link
           key={d.id}
-          className="group flex items-center justify-between hover:shadow-md p-5 bg-white my-3 text-[12px] "
+          className="group flex items-center justify-between hover:shadow-md p-3 bg-white my-3 text-[10px] "
           to={`product/${d.id}`}
         >
           <p className="self-end">{d.price} تومان</p>
           <div className="flex text-right">
             <p className="mr-3">{d.title}</p>
             <img
-              className="w-[90px] group-hover:shadow-lg"
+              className="w-[60px] group-hover:shadow-lg"
               src={d?.thumbnail}
               alt={d.title}
             />
