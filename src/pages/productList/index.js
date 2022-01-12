@@ -47,11 +47,14 @@ function ProductList() {
           <p className="self-end">{d.price} تومان</p>
           <div className="flex text-right">
             <p className="mr-3">{d.title}</p>
-            <img
+            <div className="w-[60px] h-[60px] bg-white">
+                <img
               className="w-[60px] group-hover:shadow-lg"
               src={d?.thumbnail}
               alt={d.title}
             />
+            </div>
+          
           </div>
         </Link>
       ))}

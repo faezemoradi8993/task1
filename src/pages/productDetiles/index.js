@@ -1,17 +1,20 @@
 import { useParams, useNavigate } from "react-router-dom";
-import { useProductDetails } from "../../api";
 import { ShoppingCartIcon, HeartIcon } from "@heroicons/react/solid";
 import Button from "../../components/elements/button";
-import { useAddToCard } from "../../api";
-import { toast } from "react-toastify";
+import { useAddToCard, useAddToFavorite, useProductDetails } from "../../api";
 function ProductDetiles() {
   const history = useNavigate();
   const params = useParams();
   const { data, isLoading } = useProductDetails(params.id);
   const { mutate: AddToCartMutate } = useAddToCard();
+  const { mutate: AddToFavoriteMutate } = useAddToFavorite();
   const addToCartHandler = () => {
     AddToCartMutate({ id: params.id, quantity: 1 });
   };
+  const addToFavoriteHandler = () => {
+    AddToFavoriteMutate(params.id);
+  };
+  console.log(data?.data?.data?.favorite);
   if (isLoading)
     return (
       <div className="w-full h-full flex items-center justify-center text-xl text-blue-500">
@@ -23,17 +26,29 @@ function ProductDetiles() {
       <Button title=" بازگشت" onClick={() => history(-1)} />
 
       <div className="my-5 p-5 relative w-full  bg-white shadow-lg">
-        <img
-          className="w-[120px] mx-auto "
-          src={data?.data?.data?.thumbnail}
-          alt={data?.data?.data?.title}
-        />
+        <div className="w-[120px] h-[120px] bg-white mx-auto">
+          <img
+            className="w-[120px] mx-auto "
+            src={data?.data?.data?.thumbnail}
+            alt={data?.data?.data?.title}
+          />
+        </div>
+
         <div className=" flex flex-col absolute w-10 top-5 left-5 ">
           <ShoppingCartIcon
             onClick={addToCartHandler}
-            className="p-2 border-2 border-white hover:scale-110 hover:shadow-lg hover:bg-green-600 hover:text-white bg-green-200 cursor-pointer rounded-lg"
+            className={
+              "p-2 border-2 border-white hover:scale-110 hover:shadow-lg hover:bg-green-600 hover:text-white bg-green-200 cursor-pointer rounded-lg"
+            }
           />
-          <HeartIcon className="p-2 border-2 border-white mt-5 hover:scale-110 hover:shadow-lg hover:bg-red-600 hover:text-white bg-red-200 cursor-pointer rounded-lg" />
+          <HeartIcon
+            onClick={data?.data?.data?.favorite ? null : addToFavoriteHandler}
+            className={
+              data?.data?.data?.favorite
+                ? "p-2 border-2 border-white mt-5  hover:shadow-lg bg-red-600 text-white  rounded-lg"
+                : "p-2 border-2 border-white mt-5 hover:scale-110 hover:shadow-lg hover:bg-red-600 hover:text-white bg-red-200 cursor-pointer rounded-lg"
+            }
+          />
         </div>
 
         <h1 className="border-blue-100 font-bold text-sm text-blue-900 text-right mt-3">

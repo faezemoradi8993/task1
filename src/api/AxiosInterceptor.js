@@ -1,29 +1,25 @@
 import { useEffect } from "react";
 import axios from "axios";
-import { useQueryClient } from "react-query";
 import { useTokenContext } from "../context";
-// import useDeviceInfo from "../hook/useDeviceInfo";
-// import { refreshToken } from "./api";
-import { getData } from "../utilities";
-// import { useHistory } from "react-router-dom";
+import { getData, removeData } from "../utilities";
+import { useNavigate } from "react-router-dom";
+import { toast } from "react-toastify";
+
 const AxiosInterceptor = () => {
   const baseURL = "https://api.technosun.ir/v1";
-  const api = axios.create({ baseURL: `${baseURL}/`, timeout: 10000 });
-  const queryClient = useQueryClient();
-
-  // const history = useHistory();
-
+  const history = useNavigate();
   const { setToken } = useTokenContext();
 
   // axios.interceptors
-  // useEffect(() => {
-    api.interceptors.request.use(
+  useEffect(() => {
+    axios.interceptors.request.use(
       (config) => {
-        const token=queryClient.getQueryCache("token")
-        // const token = getData("token");
-        console.log(token);
+        console.log(config);
+        Object.assign(config, { baseURL: `${baseURL}/` });
+        Object.assign(config, { timeout: 10000 });
+        const token = getData("token");
         if (token) {
-          config.headers["Authorization"] = "bearer " + token;
+          Object.assign(config.headers, { Authorization: "Bearer " + token });
         }
         return config;
       },
@@ -32,53 +28,21 @@ const AxiosInterceptor = () => {
       }
     );
 
-    api.interceptors.response.use(
+    axios.interceptors.response.use(
       (response) => {
+        console.log(response);
+        if (response?.data === "401 / Unauthorized") {
+          setToken(null);
+          removeData("token");
+          toast.error("لاگین کنید", { id: 1 });
+        }
         return response;
       },
       function (error) {
-        // const originalRequest = error.config;
-
-        // if (
-        //   error?.response?.status === 401 &&
-        //   (originalRequest.url === "/auth/refresh" || originalRequest.url === "/device/set")
-        // ) {
-        //   queryClient.removeQueries("user", { exact: true });
-        //   setToken(null);
-        //   removeData("token");
-        //   return Promise.reject(error);
-        // }
-
-        // if (error?.response?.status === 401 && !originalRequest._retry) {
-        //   originalRequest._retry = true;
-        //   refreshToken().then((res) => {
-        //     if (res.status === 200) {
-        //       if (res.data?.data?.token) {
-        //         setToken(res.data.data.token);
-        //         storeData("token", res.data.data.token);
-        //       }
-        //       if (res.data?.data?.user) {
-        //         queryClient.setQueryData("user", res.data.data.user);
-        //       }
-        //       return axios(originalRequest);
-        //     }
-        //   });
-        // }
-
-        // if (error?.response?.status === 404) {
-        //   if (
-        //     originalRequest.url.indexOf("/product/") !== -1 ||
-        //     originalRequest.url.indexOf("/order/show/") !== -1 ||
-        //     originalRequest.url.indexOf("/post/show/") !== -1
-        //   ) {
-        //     history.replace("/404");
-        //   }
-        // }
-
         return Promise.reject(error);
       }
     );
-  // }, [setToken]);
+  }, [setToken, history]);
   // end
 
   return null;

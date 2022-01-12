@@ -15,7 +15,7 @@ import {
   CartContextProvider,
   UserContextProvider,
 } from "./context";
-// import AxiosInterceptor from "./api/AxiosInterceptor";
+import AxiosInterceptor from "./api/AxiosInterceptor";
 
 const queryClient = new QueryClient();
 function App() {
@@ -25,7 +25,7 @@ function App() {
         <TokenContextProvider>
           <CartContextProvider>
             <UserContextProvider>
-              {/* <AxiosInterceptor /> */}
+              <AxiosInterceptor />
               <Layout>
                 <Routes>
                   <Route path="/" exact element={<ProductList />} />
