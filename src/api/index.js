@@ -1,4 +1,4 @@
-import { useQuery, useMutation } from "react-query";
+import { useQuery, useMutation, useInfiniteQuery } from "react-query";
 import { toast } from "react-toastify";
 import axios from "axios";
 import { storeData } from "../utilities";
@@ -6,22 +6,39 @@ import { useNavigate } from "react-router-dom";
 import { useTokenContext, useUserContext } from "../context";
 import { useQueryClient } from "react-query";
 
-export const getProductLists = async (cid, page) => {
+export const getProductLists = async ({ pageParam = 1, queryKey }) => {
   const data = await axios.get(
-    `product?page=${page}&cid=${cid.queryKey[1]}&per_page=5`
+    `product?page=${pageParam}&cid=${queryKey[1]}&per_page=5`
   );
   return data;
 };
-export const useProductLists = (cid) => {
-  return useQuery(["productList", cid], (cid) => getProductLists(cid));
+export const useProductLists = (cid,page) => {
+  return useQuery(["productList", cid , page], (cid) => getProductLists(cid));
 };
+// export const getProductLists = async ({ pageParam = 1, queryKey }) => {
+//   const data = await axios.get(
+//     `product?cid=${queryKey[1]}&per_page=5&page=${pageParam}`
+//     );
+//   return data;
+// };
+// export const useProductLists = (cid) => {
+//   return (
+//     useInfiniteQuery(
+//       ["productList", cid],
+//       getProductLists
+//     ),
+//     {
+//       getNextPageParam: (lastPage) => lastPage.nextId ?? false,   retry: false,
+//     } 
+//   );
+// };
 //get product details by id
-export const getProductDetails = async (id) => {
-  const data = await axios.get(`product/${Number(id.queryKey[1])}`);
+export const getProductDetails = async ({queryKey}) => {
+  const data = await axios.get(`product/${Number(queryKey[1])}`);
   return data;
 };
 export const useProductDetails = (id) => {
-  return useQuery(["product", id], (id) => getProductDetails(id));
+  return useQuery(["product", id], getProductDetails);
 };
 //login
 export const userLogin = async (body) => {
@@ -36,7 +53,7 @@ export const useUserLogin = () => {
 
   return useMutation(userLogin, {
     onError: (r) => {
-      toast.error(r?.response?.data?.data?.message, { id: 1 });
+      toast.error(r?.response?.data?.data?.message, { toastId: 1 });
     },
     onSuccess: (r) => {
       storeData("token", r?.token);
@@ -48,7 +65,7 @@ export const useUserLogin = () => {
       queryClient.setQueriesData("token", r?.token);
       toast.success(
         `${r?.user?.first_name}  ${r?.user?.last_name} عزیز با موفقیت وارد شدید`,
-        { id: 1 }
+        { toastId: 1 }
       );
       navigate("/");
     },
@@ -66,13 +83,13 @@ export const useUserRegister = () => {
   const { setUser } = useUserContext();
   return useMutation(userRegister, {
     onError: (r) => {
-      toast.error(r?.response?.data?.data?.message, { id: 1 });
+      toast.error(r?.response?.data?.data?.message, { toastId: 1 });
     },
     onSuccess: (r) => {
       setUser(r.data.data.user.first_name);
       toast.success(
         `${r.data.data.user.first_name}  ${r.data.data.user.last_name}  عزیز  با موفقیت ثبت نام شدید برای ورود لاگین کنید`,
-        { id: 1 }
+        { toastId: 1 }
       );
       navigate("/login");
     },
@@ -103,7 +120,7 @@ export const useAddToCard = () => {
     },
     onSuccess: (r) => {
       //مشکل داره وقتی لاگین نیس
-      toast.success("کالا با موفقیت به سبد خرید اضافه شد", { id: 1 });
+      toast.success("کالا با موفقیت به سبد خرید اضافه شد", { toastId: 1 });
     },
     onMutate: (r) => {},
     onSettled: (r) => {},
@@ -117,10 +134,10 @@ export const useRemoveFromCard = () => {
   const queryClient = useQueryClient();
   return useMutation(removeFromCard, {
     onError: (r) => {
-      toast.error(r?.response?.data?.data?.message, { id: 1 });
+      toast.error(r?.response?.data?.data?.message, { toastId: 1 });
     },
     onSuccess: (r) => {
-      toast.success("کالا با موفقیت حذف شد", { id: 1 });
+      toast.success("کالا با موفقیت حذف شد", { toastId: 1 });
       queryClient.refetchQueries("cartList");
     },
     onMutate: (r) => {},
@@ -135,23 +152,28 @@ export const getFavoriteLists = async () => {
   return data;
 };
 export const useFavoriteLists = () => {
-  return useQuery("favorite", () => getFavoriteLists());
+  return useQuery("favorite", getFavoriteLists);
 };
 //add product to favorite list
 export const AddToFavorite = async (id) => {
+  // const queryClient = useQueryClient();
+  // queryClient.refetchQueries(["product", id]);
   return await axios.post(`favorite/add?product_id=${id}`);
 };
 export const useAddToFavorite = (id) => {
   const queryClient = useQueryClient();
   return useMutation(AddToFavorite, {
     onError: (r) => {
-      toast.error(r?.response?.data?.data?.message, { id: 1 });
+      toast.error(r?.response?.data?.data?.message, { toastId: 1 });
     },
     onSuccess: (r) => {
-      toast.success("کالا با موفقیت به لیست علاقه مندی ها اضافه شد", { id: 1 });
-      // queryClient.refetchQueries(["product", id]);
+      const productId=r.request.responseURL.substring(r.request.responseURL.indexOf('=') + 1);
+      toast.success("کالا با موفقیت به لیست علاقه مندی ها اضافه شد", {
+        toastId: 1,
+      });
+      queryClient.refetchQueries(["product",productId]);
       //درجا رنگ دکمه قرمز بشه
-
+      //id رو نمیخونه چرا
     },
     onMutate: (r) => {},
     onSettled: (r) => {},
@@ -165,10 +187,12 @@ export const useRemoveFromFavorite = () => {
   const queryClient = useQueryClient();
   return useMutation(removeFromFavorite, {
     onError: (r) => {
-      toast.error(r?.response?.data?.data?.message, { id: 1 });
+      toast.error(r?.response?.data?.data?.message, { toastId: 1 });
     },
     onSuccess: (r) => {
-      toast.success("کالا با موفقیت از لیست علاقه مندی ها حذف شد", { id: 1 });
+      toast.success("کالا با موفقیت از لیست علاقه مندی ها حذف شد", {
+        toastId: 1,
+      });
       queryClient.refetchQueries("favorite");
       queryClient.refetchQueries("cardList");
     },

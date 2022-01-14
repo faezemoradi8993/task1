@@ -14,7 +14,6 @@ function ProductDetiles() {
   const addToFavoriteHandler = () => {
     AddToFavoriteMutate(params.id);
   };
-  console.log(data?.data?.data?.favorite);
   if (isLoading)
     return (
       <div className="w-full h-full flex items-center justify-center text-xl text-blue-500">

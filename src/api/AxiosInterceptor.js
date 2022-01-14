@@ -14,7 +14,6 @@ const AxiosInterceptor = () => {
   useEffect(() => {
     axios.interceptors.request.use(
       (config) => {
-        console.log(config);
         Object.assign(config, { baseURL: `${baseURL}/` });
         Object.assign(config, { timeout: 10000 });
         const token = getData("token");
@@ -30,11 +29,10 @@ const AxiosInterceptor = () => {
 
     axios.interceptors.response.use(
       (response) => {
-        console.log(response);
         if (response?.data === "401 / Unauthorized") {
           setToken(null);
           removeData("token");
-          toast.error("لاگین کنید", { id: 1 });
+          toast.error("لاگین کنید", { toastId: 1 });
         }
         return response;
       },

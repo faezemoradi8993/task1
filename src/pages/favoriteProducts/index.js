@@ -10,7 +10,6 @@ function FavoriteProducts() {
   const [page, setPage] = useState(1);
   const { data } = useFavoriteLists(page);
   const { mutate: removeMutate } = useRemoveFromFavorite();
-  console.log(data?.data?.data?.items.length === 0);
   return (
     <div className="flex flex-col items-end">
       <div className="flex w-full pb-3 justify-end items-center border-b-2 border-b-blue-100 mb-5">

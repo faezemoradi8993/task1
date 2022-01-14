@@ -4,16 +4,25 @@ import { Link } from "react-router-dom";
 import Button from "../../components/elements/button";
 
 function ProductList() {
-  const [page, setPage] = useState(0);
-
+  const loadMoreButtonRef = React.useRef();
   const [id, setId] = useState(195);
-  const { data, isLoading } = useProductLists(id,page);
+  const {
+    status,
+    data:AllProducts,
+    error,
+    isFetching,
+    isFetchingNextPage,
+    fetchNextPage,
+    hasNextPage,
+    isLoading,
+  } = useProductLists(id);
   if (isLoading)
     return (
       <div className="w-full h-full flex items-center justify-center text-xl text-blue-500">
         ..در حال بارگذاری
       </div>
     );
+
   return (
     <div className="text-sm">
       <div className="w-full flex justify-between items-center space-x-5  border-transparent pb-3 border-b-4 border-b-white ">
@@ -38,7 +47,7 @@ function ProductList() {
           onClick={() => setId(195)}
         />
       </div>
-      {data?.data?.data?.items.map((d) => (
+      {AllProducts?.data?.data?.items.map((d) => (
         <Link
           key={d.id}
           className="group flex items-center justify-between hover:shadow-md p-3 bg-white my-3 text-[10px] "
@@ -48,18 +57,31 @@ function ProductList() {
           <div className="flex text-right">
             <p className="mr-3">{d.title}</p>
             <div className="w-[60px] h-[60px] bg-white">
-                <img
-              className="w-[60px] group-hover:shadow-lg"
-              src={d?.thumbnail}
-              alt={d.title}
-            />
+              <img
+                className="w-[60px] group-hover:shadow-lg"
+                src={d?.thumbnail}
+                alt={d.title}
+              />
             </div>
-          
           </div>
         </Link>
       ))}
       <div className="w-full flex items-center justify-center">
-        <Button title="موارد بیشتر" onClick={()=>setPage(page+1)} />
+        <Button
+          ref={loadMoreButtonRef}
+          title={
+            isFetchingNextPage
+              ? "Loading more..."
+              : hasNextPage
+              ? "Load Newer"
+              : "Nothing more to load"
+          }
+          onClick={() => fetchNextPage()}
+          disabled={!hasNextPage || isFetchingNextPage}
+        />
+      </div>
+      <div>
+        {isFetching && !isFetchingNextPage ? "Background Updating..." : null}
       </div>
     </div>
   );
