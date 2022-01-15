@@ -29,7 +29,7 @@ const AxiosInterceptor = () => {
 
     axios.interceptors.response.use(
       (response) => {
-        if (response?.data === "401 / Unauthorized") {
+        if (response?.data === "401 / Unauthorized" ) {
           setToken(null);
           removeData("token");
           toast.error("لاگین کنید", { toastId: 1 });
@@ -37,6 +37,11 @@ const AxiosInterceptor = () => {
         return response;
       },
       function (error) {
+        if (error?.response?.status === 401 ) {
+          setToken(null);
+          removeData("token");
+          toast.error("لاگین کنید", { toastId: 1 });
+        }
         return Promise.reject(error);
       }
     );

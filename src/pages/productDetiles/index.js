@@ -1,19 +1,28 @@
 import { useParams, useNavigate } from "react-router-dom";
 import { ShoppingCartIcon, HeartIcon } from "@heroicons/react/solid";
 import Button from "../../components/elements/button";
-import { useAddToCard, useAddToFavorite, useProductDetails } from "../../api";
+import { useAddToCard, useAddToFavorite, useProductDetails ,useRemoveFromFavorite} from "../../api";
+import { useState } from "react";
 function ProductDetiles() {
   const history = useNavigate();
   const params = useParams();
   const { data, isLoading } = useProductDetails(params.id);
   const { mutate: AddToCartMutate } = useAddToCard();
   const { mutate: AddToFavoriteMutate } = useAddToFavorite();
+  const { mutate: RemoveFromFavoriteMutate } = useRemoveFromFavorite();
+  const [active, setActive] = useState(data?.data?.data?.favorite);
   const addToCartHandler = () => {
     AddToCartMutate({ id: params.id, quantity: 1 });
   };
   const addToFavoriteHandler = () => {
+    setActive(true)
     AddToFavoriteMutate(params.id);
   };
+  const removeFromFavoriteHandler = () => {
+    setActive(false)
+    RemoveFromFavoriteMutate(params.id);
+  };
+  console.log(data?.data?.data?.favorite);
   if (isLoading)
     return (
       <div className="w-full h-full flex items-center justify-center text-xl text-blue-500">
@@ -41,10 +50,10 @@ function ProductDetiles() {
             }
           />
           <HeartIcon
-            onClick={data?.data?.data?.favorite ? null : addToFavoriteHandler}
+            onClick={active ? removeFromFavoriteHandler : addToFavoriteHandler}
             className={
-              data?.data?.data?.favorite
-                ? "p-2 border-2 border-white mt-5  hover:shadow-lg bg-red-600 text-white  rounded-lg"
+              active
+                ? "p-2 border-2 border-white mt-5  hover:shadow-lg bg-red-600 text-white cursor-pointer rounded-lg"
                 : "p-2 border-2 border-white mt-5 hover:scale-110 hover:shadow-lg hover:bg-red-600 hover:text-white bg-red-200 cursor-pointer rounded-lg"
             }
           />

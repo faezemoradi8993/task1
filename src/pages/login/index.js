@@ -7,7 +7,7 @@ import { getData } from "../../utilities";
 import { useUserLogin } from "../../api";
 
 function Login() {
-  const {data, mutate,error: loginApiError } = useUserLogin();
+  const { mutate, error: loginApiError } = useUserLogin();
   const {
     control,
     handleSubmit,
@@ -19,7 +19,7 @@ function Login() {
     },
   });
   const onSubmit = (data) => {
-   mutate({ user: data.userName, password: data.password });
+    mutate({ user: data.userName, password: data.password });
   };
   // if user logged , redirect to profile
   const history = useNavigate();
@@ -41,13 +41,7 @@ function Login() {
           <Controller
             name="userName"
             control={control}
-            render={({ field }) => (
-              <Input
-                type="text"
-                label="ایمیل"
-                {...field}
-              />
-            )}
+            render={({ field }) => <Input type="text" label="ایمیل" {...field} />}
           />
           <Controller
             name="password"
@@ -60,7 +54,7 @@ function Login() {
                 type="password"
                 error={loginFormErrors?.password?.message || loginApiError?.data?.message}
                 label="پسورد"
-               {...field}
+                {...field}
               />
             )}
           />
