@@ -47,7 +47,7 @@ export const useUserLogin = () => {
 
   return useMutation(userLogin, {
     onError: (r) => {
-      toast.error(r?.response?.data?.data?.message, { toastId: 1 });
+      toast.error(r?.response?.data?.data?.message, { toastId: 10 });
     },
     onSuccess: (r) => {
       storeData("token", r?.token);
@@ -57,7 +57,10 @@ export const useUserLogin = () => {
       setToken(r?.token);
       queryClient.setQueriesData("user", r?.user);
       queryClient.setQueriesData("token", r?.token);
-      toast.success(`${r?.user?.first_name}  ${r?.user?.last_name} عزیز با موفقیت وارد شدید`, { toastId: 1 });
+      toast.success(
+        `${r?.user?.first_name}  ${r?.user?.last_name} عزیز با موفقیت وارد شدید`,
+        { toastId: 9 }
+      );
       navigate("/");
     },
     onMutate: (r) => {},
@@ -74,13 +77,13 @@ export const useUserRegister = () => {
   const { setUser } = useUserContext();
   return useMutation(userRegister, {
     onError: (r) => {
-      toast.error(r?.response?.data?.data?.message, { toastId: 1 });
+      toast.error(r?.response?.data?.data?.message, { toastId: 8 });
     },
     onSuccess: (r) => {
       setUser(r.data.data.user.first_name);
       toast.success(
         `${r.data.data.user.first_name}  ${r.data.data.user.last_name}  عزیز  با موفقیت ثبت نام شدید برای ورود لاگین کنید`,
-        { toastId: 1 }
+        { toastId: 7 }
       );
       navigate("/login");
     },
@@ -100,7 +103,9 @@ export const useCartLists = (option = {}) => {
 };
 //add product to cart list
 export const AddToCard = async (data) => {
-  return await axios.post(`cart/add?quantity=${data.quantity}&product_id=${data.id}`);
+  return await axios.post(
+    `cart/add?quantity=${data.quantity}&product_id=${data.id}`
+  );
 };
 export const useAddToCard = () => {
   const queryClient = useQueryClient();
@@ -112,7 +117,7 @@ export const useAddToCard = () => {
     onSuccess: (r) => {
       queryClient.refetchQueries("cartList");
       //مشکل داره وقتی لاگین نیس
-      toast.success("کالا با موفقیت به سبد خرید اضافه شد", { toastId: 1 });
+      toast.success("کالا با موفقیت به سبد خرید اضافه شد", { toastId: 6 });
     },
     onMutate: (r) => {},
     onSettled: (r) => {},
@@ -126,10 +131,10 @@ export const useRemoveFromCard = () => {
   const queryClient = useQueryClient();
   return useMutation(removeFromCard, {
     onError: (r) => {
-      toast.error(r?.response?.data?.data?.message, { toastId: 1 });
+      toast.error(r?.response?.data?.data?.message, { toastId: 5 });
     },
     onSuccess: (r) => {
-      toast.success("کالا با موفقیت حذف شد", { toastId: 1 });
+      toast.success("کالا با موفقیت حذف شد", { toastId: 4 });
       queryClient.refetchQueries("cartList");
     },
     onMutate: (r) => {},
@@ -159,11 +164,14 @@ export const useAddToFavorite = (id) => {
       toast.error(r?.response?.data?.data?.message, { toastId: 1 });
     },
     onSuccess: (r) => {
-      const productId = r.request.responseURL.substring(r.request.responseURL.indexOf("=") + 1);
+      const productId = r.request.responseURL.substring(
+        r.request.responseURL.indexOf("=") + 1
+      );
       toast.success("کالا با موفقیت به لیست علاقه مندی ها اضافه شد", {
-        toastId: 1,
+        toastId: 3,
       });
       queryClient.refetchQueries(["product", productId]);
+      queryClient.refetchQueries("favorite");
       //درجا رنگ دکمه قرمز بشه
       //id رو نمیخونه چرا
     },
@@ -182,8 +190,8 @@ export const useRemoveFromFavorite = () => {
       toast.error(r?.response?.data?.data?.message, { toastId: 1 });
     },
     onSuccess: (r) => {
-      toast.success("کالا با موفقیت از لیست علاقه مندی ها حذف شد", {
-        toastId: 1,
+      toast.error("کالا با موفقیت از لیست علاقه مندی ها حذف شد", {
+        toastId: 2,
       });
       queryClient.refetchQueries("favorite");
       queryClient.refetchQueries("cardList");

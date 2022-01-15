@@ -57,7 +57,7 @@ function ProductList() {
       ))}
       <div className="w-full flex items-center justify-center">
         <Button
-          title={isFetchingNextPage ? "Loading more..." : hasNextPage ? "Load Newer" : "Nothing more to load"}
+          title={isFetchingNextPage ? "در حال بارگیری ..." : hasNextPage ? "موارد بیشتر" : "مورد بیشتری یافت نشد"}
           onClick={() => fetchNextPage()}
           disabled={!hasNextPage || isFetchingNextPage}
         />
