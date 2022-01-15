@@ -5,35 +5,20 @@ import Button from "./../../components/elements/button/index";
 import { useUserRegister } from "../../api";
 
 function Register() {
-  const {
-    data:registerData,
-    mutate,
-    error: registerLoginError,
-  } = useUserRegister();
+  const { mutate } = useUserRegister();
 
-  const {
-    control,
-    handleSubmit,
-    formState: { errors: registerFormErrors },
-  } = useForm({
+  const { control, handleSubmit } = useForm({
     defaultValues: {
-      firstName: "faeze",
-      nicName: "",
-      lastName: "",
+      firstname: "faeze",
+      username: "",
+      lastname: "",
       mobile: "",
       password: "",
       user: "",
     },
   });
   const onSubmit = (data) => {
-    mutate({
-      user: data.user,
-      firstname: data.firstName,
-      lastname: data.lastName,
-      mobile: data.mobile,
-      username: data.nicName,
-      password: data.password,
-    });
+    mutate(data);
   };
 
   return (
@@ -44,14 +29,12 @@ function Register() {
       <form onSubmit={handleSubmit(onSubmit)}>
         <div className="flex flex-col md:flex-row space-x-0 md:space-x-5">
           <Controller
-            name="firstName"
+            name="firstname"
             control={control}
-            render={({ field }) => (
-              <Input type="text" label="نام " {...field} />
-            )}
+            render={({ field }) => <Input type="text" label="نام " {...field} />}
           />
           <Controller
-            name="lastName"
+            name="lastname"
             control={control}
             render={({ field }) => <Input type="text" label=" نام خانوادگی " {...field} />}
           />
@@ -60,33 +43,25 @@ function Register() {
           <Controller
             name="user"
             control={control}
-            render={({ field }) => (
-              <Input type="email" label="ایمیل" {...field} />
-            )}
+            render={({ field }) => <Input type="email" label="ایمیل" {...field} />}
           />
           <Controller
             name="mobile"
             control={control}
-            render={({ field }) => (
-              <Input type="mobile" label="موبایل" {...field} />
-            )}
+            render={({ field }) => <Input type="mobile" label="موبایل" {...field} />}
           />
         </div>
         <div className="flex flex-col md:flex-row space-x-0 md:space-x-5">
           <Controller
             name="password"
             control={control}
-            render={({ field }) => (
-              <Input type="password" label="پسورد" {...field} />
-              )}
+            render={({ field }) => <Input type="password" label="پسورد" {...field} />}
           />
-              <Controller
-                name="nicName"
-                control={control}
-                render={({ field }) => (
-                  <Input type="text" label="نام کاربری" {...field} />
-                )}
-              />
+          <Controller
+            name="username"
+            control={control}
+            render={({ field }) => <Input type="text" label="نام کاربری" {...field} />}
+          />
         </div>
         <div className="w-full flex items-center justify-center mt-4">
           <Button title="ثبت نام" type="submit" />

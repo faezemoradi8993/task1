@@ -7,33 +7,27 @@ import { useTokenContext, useUserContext } from "../context";
 import { useQueryClient } from "react-query";
 
 export const getProductLists = async ({ pageParam = 1, queryKey }) => {
-  const data = await axios.get(
-    `product?page=${pageParam}&cid=${queryKey[1]}&per_page=5`
-  );
-  return data;
+  const [key, cid] = queryKey;
+  const { data } = await axios.get("/product", {
+    params: {
+      page: pageParam,
+      cid: cid,
+      per_page: 5,
+    },
+  });
+  return data?.data;
 };
-export const useProductLists = (cid,page) => {
-  return useQuery(["productList", cid , page], (cid) => getProductLists(cid));
+
+export const useProductLists = (cid) => {
+  return useInfiniteQuery(["productList", cid], getProductLists, {
+    getNextPageParam: (lastPage) => {
+      return lastPage?.next_page ? lastPage?.page + 1 : null;
+    },
+  });
 };
-// export const getProductLists = async ({ pageParam = 1, queryKey }) => {
-//   const data = await axios.get(
-//     `product?cid=${queryKey[1]}&per_page=5&page=${pageParam}`
-//     );
-//   return data;
-// };
-// export const useProductLists = (cid) => {
-//   return (
-//     useInfiniteQuery(
-//       ["productList", cid],
-//       getProductLists
-//     ),
-//     {
-//       getNextPageParam: (lastPage) => lastPage.nextId ?? false,   retry: false,
-//     } 
-//   );
-// };
+
 //get product details by id
-export const getProductDetails = async ({queryKey}) => {
+export const getProductDetails = async ({ queryKey }) => {
   const data = await axios.get(`product/${Number(queryKey[1])}`);
   return data;
 };
@@ -63,10 +57,7 @@ export const useUserLogin = () => {
       setToken(r?.token);
       queryClient.setQueriesData("user", r?.user);
       queryClient.setQueriesData("token", r?.token);
-      toast.success(
-        `${r?.user?.first_name}  ${r?.user?.last_name} عزیز با موفقیت وارد شدید`,
-        { toastId: 1 }
-      );
+      toast.success(`${r?.user?.first_name}  ${r?.user?.last_name} عزیز با موفقیت وارد شدید`, { toastId: 1 });
       navigate("/");
     },
     onMutate: (r) => {},
@@ -102,23 +93,24 @@ export const useUserRegister = () => {
 //get cart list
 export const getCartLists = async () => {
   const data = await axios.get(`cart/list`);
-  return data;
+  return data.data;
 };
-export const useCartLists = () => {
-  return useQuery("cartList", () => getCartLists());
+export const useCartLists = (option = {}) => {
+  return useQuery("cartList", () => getCartLists(), option);
 };
 //add product to cart list
 export const AddToCard = async (data) => {
-  return await axios.post(
-    `cart/add?quantity=${data.quantity}&product_id=${data.id}`
-  );
+  return await axios.post(`cart/add?quantity=${data.quantity}&product_id=${data.id}`);
 };
 export const useAddToCard = () => {
+  const queryClient = useQueryClient();
+
   return useMutation(AddToCard, {
     onError: (r) => {
       toast.error(r?.response?.data?.data?.message);
     },
     onSuccess: (r) => {
+      queryClient.refetchQueries("cartList");
       //مشکل داره وقتی لاگین نیس
       toast.success("کالا با موفقیت به سبد خرید اضافه شد", { toastId: 1 });
     },
@@ -167,11 +159,11 @@ export const useAddToFavorite = (id) => {
       toast.error(r?.response?.data?.data?.message, { toastId: 1 });
     },
     onSuccess: (r) => {
-      const productId=r.request.responseURL.substring(r.request.responseURL.indexOf('=') + 1);
+      const productId = r.request.responseURL.substring(r.request.responseURL.indexOf("=") + 1);
       toast.success("کالا با موفقیت به لیست علاقه مندی ها اضافه شد", {
         toastId: 1,
       });
-      queryClient.refetchQueries(["product",productId]);
+      queryClient.refetchQueries(["product", productId]);
       //درجا رنگ دکمه قرمز بشه
       //id رو نمیخونه چرا
     },
