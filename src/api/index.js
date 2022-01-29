@@ -109,7 +109,6 @@ export const AddToCard = async (data) => {
 };
 export const useAddToCard = () => {
   const queryClient = useQueryClient();
-
   return useMutation(AddToCard, {
     onError: (r) => {
       toast.error(r?.response?.data?.data?.message);
